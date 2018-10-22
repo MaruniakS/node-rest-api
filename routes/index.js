@@ -4,7 +4,7 @@ var router = express.Router();
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.json({
-    message: '////'
+    message: 'API is working'
   })
   // res.render('index', { title: 'Express' });
 });
