@@ -8,6 +8,8 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var itemsRouter = require('./routes/items');
 
+var AuthService = require('./services/auth.service');
+
 var app = express();
 
 app.use(cors());
@@ -19,6 +21,6 @@ app.use(cookieParser());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/items', itemsRouter);
+app.use('/items', [AuthService.verifyToken], itemsRouter);
 
 module.exports = app;
