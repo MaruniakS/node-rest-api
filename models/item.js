@@ -2,10 +2,13 @@
 module.exports = (sequelize, DataTypes) => {
   const Item = sequelize.define('Item', {
     title: DataTypes.STRING,
-    description: DataTypes.TEXT
+    description: DataTypes.TEXT,
+    user: {
+      type: DataTypes.INTEGER
+    }
   }, {});
   Item.associate = function(models) {
-    // associations can be defined here
+    Item.belongsTo(models.User, { foreignKey: 'userId'})
   };
   return Item;
 };
