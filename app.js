@@ -21,6 +21,6 @@ app.use(cookieParser());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/items', [AuthService.verifyToken], itemsRouter);
+app.use('/items', itemsRouter);
 
 module.exports = app;
