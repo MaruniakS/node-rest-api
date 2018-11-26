@@ -14,6 +14,10 @@ module.exports = {
       description: {
         type: Sequelize.TEXT
       },
+      completed: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
       userId: {
         type: Sequelize.INTEGER,
         references: {
