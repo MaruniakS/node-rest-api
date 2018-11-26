@@ -37,6 +37,27 @@ router.post('/', function(req, res, next) {
       }));
 });
 
+/* GET item */
+
+router.get('/:id', function(req, res, next) {
+  const { id } = req.params;
+  model.Item.findById(id)
+      .then(item => {
+        if (!item) {
+          return res.status(404).json({
+            error: true,
+            message: 'Item not found'
+          })
+        }
+        res.status(200).json({
+          data: item
+        })
+      })
+      .catch(err => res.json({
+        error: true,
+        message: err.message
+      }))
+});
 
 /* update item. */
 router.put('/:id', function(req, res, next) {
