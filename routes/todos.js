@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var model = require('../models/index');
 
-/* GET items listing. */
+/* GET todos listing. */
 router.get('/', function(req, res, next) {
   model.Todo.findAll({
     where: {
@@ -18,7 +18,7 @@ router.get('/', function(req, res, next) {
 });
 
 
-/* POST item. */
+/* POST todo. */
 router.post('/', function(req, res, next) {
   const {
     title
@@ -38,27 +38,14 @@ router.post('/', function(req, res, next) {
   }));
 });
 
-/* GET item */
+/* GET todo */
 
 router.get('/:id', function(req, res, next) {
   const { id } = req.params;
 
-  model.Todo.findById(id)
+  model.Todo.findByPk(id)
       .then(todo => {
-        if (!todo) {
-          return res.status(404).json({
-            error: true,
-            message: 'Item not found'
-          })
-        }
-        if (todo.userId !== req.userId) {
-          return res.status(403).json({
-            error: true,
-            message: 'You don\'t have permissions for this todo.'
-          })
-        }
-
-        res.status(200).json({
+        isAccessible(todo, req.userId, res) && res.status(200).json({
           data: todo
         })
       })
@@ -69,44 +56,60 @@ router.get('/:id', function(req, res, next) {
 
 });
 
-/* update item. */
+/* update todo. */
 router.put('/:id', function(req, res, next) {
-  const item_id = req.params.id;
+  const todoId = req.params.id;
 
-  const { title, expires_at } = req.body;
+  const { title, expires_at, completed } = req.body;
 
-  model.Item.update({
-    title: title,
-    description: description
-  }, {
-    where: {
-      id: item_id
-    }
-  })
-      .then(item => res.json({
-        error: false,
-        message: 'todo has been updated.'
-      }))
+  model.Todo.findByPk(todoId)
+      .then(todo => {
+        isAccessible(todo, req.userId, res) && todo.update({title, expires_at, completed})
+            .then(() => {
+          res.json({
+            error: false,
+            message: 'todo has been updated.'
+          })
+        })
+      })
       .catch(error => res.json({
         error: error
       }));
 });
 
 
-/* GET item listing. */
+/* DELETE todo. */
 router.delete('/:id', function(req, res, next) {
-  const item_id = req.params.id;
+  const todoId = req.params.id;
 
-  model.Item.destroy({ where: {
-    id: item_id
-  }})
-      .then(status => res.json({
+  model.Todo.findByPk(todoId)
+      .then(todo => {
+        return isAccessible(todo, req.userId, res) && todo.destroy();
+      })
+      .then(() => res.json({
         error: false,
-        message: 'todo has been delete.'
+        message: 'Todo has been deleted.'
       }))
       .catch(error => res.json({
         error: error
       }));
 });
+
+const isAccessible = (todo, userId, res) => {
+  if (!todo) {
+     res.status(404).json({
+      error: true,
+      message: 'Item not found'
+    });
+    return false;
+  } else if (todo.userId !== userId) {
+     res.status(403).json({
+      error: true,
+      message: 'You don\'t have permissions for this todo.'
+    });
+    return false;
+  }
+  return true;
+};
 
 module.exports = router;
