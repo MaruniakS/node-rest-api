@@ -7,6 +7,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var itemsRouter = require('./routes/items');
+var todosRouter = require('./routes/todos');
 
 var AuthService = require('./services/auth.service');
 
@@ -22,5 +23,6 @@ app.use(cookieParser());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/items', itemsRouter);
+app.use('/todos', [AuthService.verifyToken], todosRouter);
 
 module.exports = app;
