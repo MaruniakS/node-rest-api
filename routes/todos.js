@@ -21,10 +21,11 @@ router.get('/', function(req, res, next) {
 /* POST todo. */
 router.post('/', function(req, res, next) {
   const {
-    title
+    title,
+    expires_at: expTime
   } = req.body;
   const userId = req.userId;
-  const expires_at = req.body.expires_at || Date.now();
+  const expires_at = expTime ? new Date(expTime) : Date.now();
   model.Todo.create({
     title,
     expires_at,
