@@ -25,7 +25,7 @@ router.post('/', function(req, res, next) {
     expires_at: expTime
   } = req.body;
   const userId = req.userId;
-  const expires_at = expTime ? new Date(expTime) : Date.now();
+  const expires_at = expTime || Date.now();
   model.Todo.create({
     title,
     expires_at,
