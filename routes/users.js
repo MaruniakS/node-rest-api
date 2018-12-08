@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
+var Op = require('sequelize').Op;
 
 var model = require('../models/index');
 
@@ -13,17 +14,31 @@ router.get('/', function(req, res, next) {
 
 router.post('/sign_up', function(req, res, next) {
   const { firstName, lastName, username, email, password } = req.body;
-  model.User.create({
-    password: bcrypt.hashSync(password, 8),
-    firstName,
-    lastName,
-    username,
-    email
+  model.User.findOne({
+    where: {
+      [Op.or]: [{ username }, { email }]
+    }
   }).then(user => {
-    res.status(201).send({
-      message: 'User created',
-      user
+    if (user) {
+      return res.status(422).send({
+        error: true,
+        message: 'User with this name or email already exists'
+      })
+    }
+
+    model.User.create({
+      password: bcrypt.hashSync(password, 8),
+      firstName,
+      lastName,
+      username,
+      email
+    }).then(user => {
+      return res.status(201).send({
+        message: 'User created',
+        user
+      })
     })
+
   }).catch(err => {
     res.status(500).send({err});
   })
