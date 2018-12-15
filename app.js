@@ -8,6 +8,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var itemsRouter = require('./routes/items');
 var todosRouter = require('./routes/todos');
+var santaRouter = require('./routes/santa');
 
 var AuthService = require('./services/auth.service');
 
@@ -24,5 +25,6 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/items', itemsRouter);
 app.use('/todos', [AuthService.verifyToken], todosRouter);
+app.use('/', santaRouter);
 
 module.exports = app;
